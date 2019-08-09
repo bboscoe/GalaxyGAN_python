@@ -1,6 +1,6 @@
 class Config:
     data_path = "figures"
-    model_path_train = "figures/checkpoint/model_14.ckpt"
+    model_path_train = ""
     model_path_test = "figures/checkpoint/model_20.ckpt" 
     output_path = "results"
 
