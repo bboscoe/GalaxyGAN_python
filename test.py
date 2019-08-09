@@ -35,15 +35,19 @@ def test():
     start_time = time.time()
 
     with tf.Session() as sess:
+        print("restoring:"+conf.model_path_test)
         saver.restore(sess, conf.model_path_test)
         test_data = data["test"]()
         for img, cond, name in test_data:
+            print(name)
             pimg, pcond = prepocess_test(img, cond)
             gen_img = sess.run(model.gen_img, feed_dict={model.image:pimg, model.cond:pcond})
             gen_img = gen_img.reshape(gen_img.shape[1:])
             gen_img = (gen_img + 1.) * 127.5
-            image = np.concatenate((gen_img, cond), axis=1).astype(np.int)
-            imsave(image, "./test" + "/%s" % name)
+            part = os.path.splitext(name)[0]
+            #image = np.concatenate((gen_img, cond), axis=1).astype(np.int)
+            imsave(gen_img, "./test/"+part+'_gen.jpg')
+            imsave(cond, "./test/"+part+'_cond.jpg')
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'gpu=':

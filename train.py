@@ -13,8 +13,8 @@ def prepocess_train(img, cond,):
     cond = scipy.misc.imresize(cond, [conf.adjust_size, conf.adjust_size])
     h1 = int(np.ceil(np.random.uniform(1e-2, conf.adjust_size - conf.train_size)))
     w1 = int(np.ceil(np.random.uniform(1e-2, conf.adjust_size - conf.train_size)))
-    img = img[h1:h1 + conf.train_size, w1:w1 + conf.train_size]
-    cond = cond[h1:h1 + conf.train_size, w1:w1 + conf.train_size]
+    #img = img[h1:h1 + conf.train_size, w1:w1 + conf.train_size]
+    #cond = cond[h1:h1 + conf.train_size, w1:w1 + conf.train_size]
     if np.random.random() > 0.5:
         img = np.fliplr(img)
         cond = np.fliplr(cond)
@@ -53,10 +53,13 @@ def train():
     config.gpu_options.allow_growth = True
     with tf.Session(config=config) as sess:
         if conf.model_path_train == "":
+        #if not os.path.exists(conf.data_path + "/checkpoint"):
             sess.run(tf.global_variables_initializer())
         else:
             saver.restore(sess, conf.model_path_train)
-        for epoch in xrange(conf.max_epoch):
+            #saver.restore(sess, conf.data_path + "/checkpoint/")
+            
+        for epoch in np.arange(conf.max_epoch):
             counter = 0
             train_data = data["train"]()
             for img, cond, name in train_data:
@@ -66,11 +69,10 @@ def train():
                 _, M = sess.run([g_opt, model.g_loss], feed_dict={model.image:img, model.cond:cond})
                 counter += 1
                 if counter % 50 ==0:
-                    print "Epoch [%d], Iteration [%d]: time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
-                      % (epoch, counter, time.time() - start_time, m, M)
+                    print("Epoch [%d], Iteration [%d]: time: %4.4f, d_loss: %.8f, g_loss: %.8f" % (epoch, counter, time.time() - start_time, m, M))
             if (epoch + 1) % conf.save_per_epoch == 0:
                 save_path = saver.save(sess, conf.data_path + "/checkpoint/" + "model_%d.ckpt" % (epoch+1))
-                print "Model saved in file: %s" % save_path
+                print("Model saved in file: %s" % save_path)
                 test_data = data["test"]()
                 for img, cond, name in test_data:
                     pimg, pcond = prepocess_test(img, cond)

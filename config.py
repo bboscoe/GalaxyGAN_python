@@ -1,12 +1,12 @@
 class Config:
     data_path = "figures"
-    model_path_train = ""
+    model_path_train = "figures/checkpoint/model_14.ckpt"
     model_path_test = "figures/checkpoint/model_20.ckpt" 
     output_path = "results"
 
-    img_size = 424
-    adjust_size = 424
-    train_size = 424
+    img_size = 423
+    adjust_size = 423
+    train_size = 423
     img_channel = 3
     conv_channel_base = 64
 
